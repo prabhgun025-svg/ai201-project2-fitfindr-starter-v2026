@@ -37,6 +37,11 @@
 
 <!-- ═══════════════════════ UNIT 3 — THE BUILD ═══════════════════════ -->
 
+## Stretch Features I am adding to the project 
+1. a Fourth Tool which is price comparison 
+2. Style Memory in which the agent remembers a wardrobe between runs 
+
+
 ## What This Does
 
 <!-- Three or four sentences: what a user asks for, and what they get back. -->
@@ -332,3 +337,4 @@ full. -->
 ---
 
 📖 **How to run this project: [RUNNING.md](RUNNING.md)**
+
