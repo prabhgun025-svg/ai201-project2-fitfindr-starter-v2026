@@ -10,6 +10,8 @@ can't tell which layer is lying to you.
     suggest_outfit(new_item, wardrobe)             → str
     create_fit_card(outfit, new_item)              → str
 
+    price_comparison(target, candidates)           → dict | None
+
 All three are stubs right now. They run and they do nothing — that's the
 starting position and it's deliberate.
 
@@ -154,3 +156,40 @@ def create_fit_card(outfit: str, new_item: dict) -> str:
     """
     # TODO: replace this with your implementation
     return ""
+
+
+# ── Tool 4: price_comparison ────────────────────────────────────────────────
+
+def price_comparison(target: dict, candidates: list[dict] | None = None) -> dict | None:
+    """
+    Compare a target listing's price to similar listings and summarize the market.
+
+    Args:
+        target: a listing dict (must include `id` and `price`).
+        candidates: optional list of listing dicts to compare against; if
+                    None, the function should load listings from the dataset.
+
+    Returns:
+        A dict with these keys when comparables exist:
+            `target_id` (str), `target_price` (float),
+            `median_price` (float), `min_price` (float), `max_price` (float),
+            `num_competitors` (int), `competitors` (list of dicts).
+
+        Each competitor dict contains: `id` (str), `price` (float),
+        `platform` (str), `url` (str), and `similarity` (float).
+
+    When it has nothing:
+        Returns `None` when no comparable listings are found.
+
+    TODO:
+        1. If `candidates` is None, call `load_listings()` and use that.
+        2. Filter candidates by category/style/size as appropriate to find
+           comparable items.
+        3. Compute min/median/max and return the summarized dict.
+
+    Test it from a terminal before you move on:
+        python -c "from tools import price_comparison; from utils.data_loader import load_listings; print(price_comparison(load_listings()[0]))"
+    """
+    # TODO: replace this with your implementation
+    return None
+
