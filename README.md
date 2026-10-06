@@ -64,24 +64,31 @@
 
 ### `search_listings`
 
-- **What it does:**
-- **Inputs:** <!-- name and type each: `max_price` (float), not "a price" -->
-- **Returns:**
-- **When it has nothing:**
+- What it does: Searches the project's listings data for items matching a text query and optional filters, returning scored candidates.
+- Inputs: `query` (str), `max_price` (float, optional), `size` (str, optional), `platform` (str, optional)
+- Returns: A list of listing dicts, each with keys: `id` (str), `title` (str), `price` (float), `size` (str or null), `platform` (str), `url` (str), `condition` (str), and `score` (float relevance score).
+- When it has nothing: Returns an empty list (`[]`).
 
 ### `suggest_outfit`
 
-- **What it does:**
-- **Inputs:**
-- **Returns:**
-- **When it has nothing:**
+- What it does: Generates outfit suggestions by combining one or more listings into cohesive looks based on style rules and optional user/context inputs.
+- Inputs: `listings` (list of listing dicts), `weather` (str, optional), `occasion` (str, optional), `user_profile` (dict, optional)
+- Returns: A list of outfit dicts, each with `items` (list of listing `id` strings), `description` (str), `style_tags` (list of str), and `confidence` (float 0.0-1.0).
+- When it has nothing: Returns an empty list (`[]`).
 
 ### `create_fit_card`
 
-- **What it does:**
-- **Inputs:**
-- **Returns:**
-- **When it has nothing:**
+- What it does: Renders a single, shareable fit card summarizing an outfit or listing, suitable for display or sending to a UI or API consumer.
+- Inputs: `outfit` (dict describing the outfit; required), `image_url` (str, optional), `brand_info` (dict, optional)
+- Returns: A dict with `title` (str), `bullet_points` (list of str), `price` (float), `image` (str URL or null), `call_to_action` (str), and `metadata` (dict with source ids and timestamps).
+- When it has nothing: Returns `None` when it cannot produce a valid card (e.g., missing required `outfit` information).
+
+### `price_comparison`
+
+- What it does: Compares a target listing's price against similar listings to show how it sits in the market.
+- Inputs: `target` (listing dict with `id` and `price`), `candidates` (list of listing dicts, optional)
+- Returns: A dict with `target_id` (str), `target_price` (float), `median_price` (float), `min_price` (float), `max_price` (float), `num_competitors` (int), and `competitors` (list of dicts with `id`, `price`, `platform`, `url`, `similarity`).
+- When it has nothing: Returns `None` when no comparable listings can be found.
 
 ---
 
@@ -98,7 +105,7 @@
      The grader checks your code against what you claim here, so the file and
      function have to be real. -->
 
-**Branch rule:**
+**Branch rule:** "If search_listings returns an empty list, put a message in the session and stop. Otherwise, take the first result and go to suggest_outfit." — `agent.py::run_agent`
 
 **Where it lives:** `agent.py::run_agent`
 
@@ -337,4 +344,5 @@ full. -->
 ---
 
 📖 **How to run this project: [RUNNING.md](RUNNING.md)**
+
 
