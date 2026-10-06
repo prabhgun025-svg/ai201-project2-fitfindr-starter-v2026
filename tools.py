@@ -80,8 +80,52 @@ def search_listings(
     Test it from a terminal before you move on:
         python -c "from tools import search_listings; print(search_listings('graphic tee', max_price=30))"
     """
-    # TODO: replace this with your implementation
-    return []
+    listings = load_listings()
+    
+    # Normalize the search description into keywords
+    query_keywords = set(description.lower().split())
+    
+    # Filter by price and size, score by keyword overlap
+    candidates = []
+    for listing in listings:
+        # Filter by max_price
+        if max_price is not None and listing.get("price", float("inf")) > max_price:
+            continue
+        
+        # Filter by size (case-insensitive, handle size ranges like "S/M")
+        if size is not None:
+            listing_size = (listing.get("size") or "").lower()
+            query_size = size.lower()
+            # Match if the query size appears as a standalone component or full match
+            if query_size not in listing_size and listing_size != query_size:
+                # Check if it's a component of a range like "S/M" or "XS-M"
+                size_parts = listing_size.replace("-", "/").split("/")
+                if query_size not in size_parts:
+                    continue
+        
+        # Score by keyword overlap with title and description
+        title_text = (listing.get("title") or "").lower()
+        desc_text = (listing.get("description") or "").lower()
+        style_tags = [tag.lower() for tag in (listing.get("style_tags") or [])]
+        
+        # Count matching keywords
+        overlap = 0
+        for keyword in query_keywords:
+            if keyword in title_text.split():
+                overlap += 2  # weight title matches higher
+            elif keyword in desc_text:
+                overlap += 1
+            elif keyword in style_tags:
+                overlap += 1.5
+        
+        if overlap > 0:
+            candidates.append((overlap, listing))
+    
+    # Sort by score (descending) and return top results
+    candidates.sort(key=lambda x: x[0], reverse=True)
+    results = [listing for _, listing in candidates[:config.SEARCH_RESULT_LIMIT]]
+    
+    return results
 
 
 # ── Tool 2: suggest_outfit ────────────────────────────────────────────────────
@@ -114,8 +158,35 @@ def suggest_outfit(new_item: dict, wardrobe: dict) -> str:
     Test it from a terminal before you move on:
         python -c "from tools import suggest_outfit; from utils.data_loader import get_example_wardrobe, load_listings; print(suggest_outfit(load_listings()[0], get_example_wardrobe()))"
     """
-    # TODO: replace this with your implementation
-    return ""
+    item_title = new_item.get("title", "item")
+    item_brand = new_item.get("brand") or "unbranded"
+    item_category = new_item.get("category", "piece")
+    item_style = ", ".join(new_item.get("style_tags", []))
+    item_condition = new_item.get("condition", "good")
+    
+    wardrobe_items = wardrobe.get("items", [])
+    
+    if not wardrobe_items:
+        # Empty wardrobe: ask for general styling advice
+        prompt = f"""I found a {item_condition} {item_brand} {item_title} ({item_category}, style: {item_style}). 
+        
+I don't have any items in my wardrobe yet. Give me 1-2 general styling ideas for how to wear this piece. Focus on the vibe and what essentials would work well with it."""
+    else:
+        # Non-empty wardrobe: suggest specific outfit combinations
+        wardrobe_desc = "\n".join([
+            f"- {w.get('name', 'item')} ({w.get('category', 'clothing')})"
+            for w in wardrobe_items[:10]  # limit to first 10 for brevity
+        ])
+        
+        prompt = f"""I found a {item_condition} {item_brand} {item_title} ({item_category}, style: {item_style}).
+
+My current wardrobe includes:
+{wardrobe_desc}
+
+Give me 1-2 specific outfit suggestions that combine this new piece with items I already own. Name the pieces you'd pair it with."""
+    
+    response = generate(prompt)
+    return response if response else ""
 
 
 # ── Tool 3: create_fit_card ───────────────────────────────────────────────────
@@ -154,8 +225,28 @@ def create_fit_card(outfit: str, new_item: dict) -> str:
     Test it from a terminal before you move on:
         python -c "from tools import create_fit_card; from utils.data_loader import load_listings; print(create_fit_card('jeans and white sneakers', load_listings()[0]))"
     """
-    # TODO: replace this with your implementation
-    return ""
+    # Guard against empty or whitespace-only outfit
+    if not outfit or not outfit.strip():
+        return "No outfit suggestion available for this item."
+    
+    item_title = new_item.get("title", "item")
+    item_price = new_item.get("price", "unknown")
+    item_platform = new_item.get("platform", "unknown platform")
+    item_condition = new_item.get("condition", "good")
+    item_brand = new_item.get("brand") or "this piece"
+    
+    prompt = f"""Write a 2-4 sentence social media caption for someone posting about a thrift find.
+
+Item: {item_title}
+Price: ${item_price}
+Condition: {item_condition}
+Platform: {item_platform}
+Outfit suggestion: {outfit}
+
+The caption should be casual, mention the price and platform naturally (not as a list), describe the vibe, and sound like a real post someone would make. Be specific about why this find is cool."""
+    
+    response = generate(prompt)
+    return response if response else ""
 
 
 # ── Tool 4: price_comparison ────────────────────────────────────────────────
@@ -190,6 +281,83 @@ def price_comparison(target: dict, candidates: list[dict] | None = None) -> dict
     Test it from a terminal before you move on:
         python -c "from tools import price_comparison; from utils.data_loader import load_listings; print(price_comparison(load_listings()[0]))"
     """
-    # TODO: replace this with your implementation
-    return None
+    if not target or "price" not in target:
+        return None
+    
+    if candidates is None:
+        candidates = load_listings()
+    
+    if not candidates:
+        return None
+    
+    # Get target attributes
+    target_id = target.get("id")
+    target_price = float(target.get("price", 0))
+    target_category = target.get("category")
+    target_size = (target.get("size") or "").lower()
+    target_style_tags = set(tag.lower() for tag in (target.get("style_tags") or []))
+    
+    # Find comparable items
+    comparables = []
+    for item in candidates:
+        # Skip the target itself
+        if item.get("id") == target_id:
+            continue
+        
+        if not item.get("price"):
+            continue
+        
+        # Must be same category
+        if item.get("category") != target_category:
+            continue
+        
+        # Calculate similarity score
+        similarity = 0.5  # base similarity for same category
+        
+        # Size match (if both have sizes)
+        if target_size and item.get("size"):
+            item_size = (item.get("size") or "").lower()
+            if target_size == item_size:
+                similarity += 0.3
+            elif target_size in item_size or item_size in target_size:
+                similarity += 0.15
+        
+        # Style tag overlap
+        item_style_tags = set(tag.lower() for tag in (item.get("style_tags") or []))
+        tag_overlap = len(target_style_tags & item_style_tags)
+        if tag_overlap > 0:
+            similarity += min(0.2, tag_overlap * 0.05)
+        
+        # Build competitor record
+        competitor = {
+            "id": item.get("id"),
+            "price": float(item.get("price", 0)),
+            "platform": item.get("platform", "unknown"),
+            "url": item.get("url", ""),
+            "similarity": round(similarity, 2),
+        }
+        comparables.append(competitor)
+    
+    # No comparables found
+    if not comparables:
+        return None
+    
+    # Sort by similarity (descending) and collect prices
+    comparables.sort(key=lambda x: x["similarity"], reverse=True)
+    prices = [c["price"] for c in comparables]
+    prices.sort()
+    
+    # Compute price statistics
+    n = len(prices)
+    median_price = prices[n // 2] if n % 2 else (prices[n // 2 - 1] + prices[n // 2]) / 2
+    
+    return {
+        "target_id": target_id,
+        "target_price": round(target_price, 2),
+        "median_price": round(median_price, 2),
+        "min_price": round(min(prices), 2),
+        "max_price": round(max(prices), 2),
+        "num_competitors": n,
+        "competitors": comparables,
+    }
 
