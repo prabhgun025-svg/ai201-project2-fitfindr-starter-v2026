@@ -106,3 +106,4 @@ def check_iterations(count: int) -> None:
             f"That almost always means a branch isn't ending. Print the value "
             f"your branch checks, on the line before the `if`."
         )
+
