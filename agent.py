@@ -106,9 +106,59 @@ def run_agent(query: str, wardrobe: dict) -> dict:
         than a stack trace. The import is already at the top of this file.
     """
     session = new_session(query, wardrobe)
-
-    # TODO: delete these two lines and build the loop.
-    session["error"] = "The planning loop isn't built yet — see the TODO in agent.py."
+    
+    # Parse the query using regex to extract price and size
+    import re
+    
+    description = query
+    max_price = None
+    size = None
+    
+    # Extract price: look for "under $X" or "$X" or "under X"
+    price_match = re.search(r'(?:under\s+)?(?:\$)?(\d+(?:\.\d+)?)', query, re.IGNORECASE)
+    if price_match:
+        max_price = float(price_match.group(1))
+        description = re.sub(r'(?:under\s+)?(?:\$)?\d+(?:\.\d+)?', '', description, flags=re.IGNORECASE)
+    
+    # Extract size: look for "size X" or common size abbreviations
+    size_match = re.search(r'(?:size\s+)?([XS]+|M|L|XL|XXL|\d+)', query, re.IGNORECASE)
+    if size_match:
+        size = size_match.group(1).upper()
+        description = re.sub(r'(?:size\s+)?([XS]+|M|L|XL|XXL|\d+)', '', description, flags=re.IGNORECASE)
+    
+    # Clean up description
+    description = description.replace(',', ' ').strip()
+    
+    session["parsed"] = {
+        "description": description,
+        "size": size,
+        "max_price": max_price,
+    }
+    
+    # Call search_listings
+    search_results = search_listings(description, size=size, max_price=max_price)
+    session["search_results"] = search_results
+    
+    # BRANCH: If search returns empty list, stop
+    if not search_results:
+        session["error"] = f"No items found matching '{description}'" + (f" under ${max_price}" if max_price else "") + (f" in size {size}" if size else "") + ". Try different keywords, a higher price, or removing size filters."
+        return session
+    
+    # Choose the first result and store in session
+    selected_item = search_results[0]
+    session["selected_item"] = selected_item
+    
+    # Call suggest_outfit with the selected item from session
+    item_from_session = session["selected_item"]
+    outfit_suggestion = suggest_outfit(item_from_session, wardrobe)
+    session["outfit_suggestion"] = outfit_suggestion
+    
+    # Call create_fit_card, reading outfit from session
+    outfit_from_session = session["outfit_suggestion"]
+    item_for_card = session["selected_item"]
+    fit_card = create_fit_card(outfit_from_session, item_for_card)
+    session["fit_card"] = fit_card
+    
     return session
 
 
@@ -145,3 +195,4 @@ if __name__ == "__main__":
         "\nThe second one should stop before the fit card. If both paths look "
         "the same,\nthe branch isn't doing anything yet."
     )
+
