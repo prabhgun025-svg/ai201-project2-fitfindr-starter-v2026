@@ -25,76 +25,48 @@ Given a query that matches at least one listing, the agent completes all three
 tool calls and returns a fit card — in at least 4 of 5 tries.
 
 **Why this target:**
-<!-- Why 4 of 5 and not 5 of 5? Something about your search, probably —
-     "my search is a plain keyword match and some phrasings will miss" is a
-     real answer. -->
+The search is based on plain keyboard and this means the matching sets are are imperfect so some valid phrases will miss. A strict 5/5 target would be harder to guarantee
 
 ---
 
 ## 2. An impossible query stops before the second tool
 
 Given a query that matches no listings, the agent stops before calling
-`suggest_outfit` and returns a message naming what to change — 5 of 5 tries.
+`suggest_outfit` and returns a message naming what to change — in 5 of 5 tries.
 
 **Why this target:**
-<!-- Why is 5 of 5 reasonable here when criterion 1 isn't? What's different
-     about this path? -->
+the criteria is direct and has a yes or no system. If the query stops before the second tool, it works but if it does not, it isn't working hence the 5/5 target 
 
 ---
 
-## 3. Something about state
+## 3. The selected item must survive the whole loop
 
-<!-- YOU WRITE THIS ONE.
-
-     How would you know that the item your search found is the same item the
-     next tool received? Name something countable or observable.
-
-     This is the criterion people find hardest, because state failure doesn't
-     look like state failure — it looks like a tool problem. Something that
-     compares session["selected_item"] against what actually reached
-     suggest_outfit is the shape you're after. -->
-
-
+After `search_listings` returns a result and the loop stores it in `session["selected_item"]`, that same item's `id` and price appear in the session and in the output of both `suggest_outfit` and `create_fit_card` — in 5 of 5 tries.
 
 **Why this target:**
+The loop can call all three tools and still be wrong if it switches items between steps. Either the item IDs match or they don't so 5 of 5 is the right target. If state is broken, no other criterion can pass
 
 
 
 ---
 
-## 4. Something about the fit card
+## 4. Fit-card fallback and content requirement are both enforced
 
-<!-- YOU WRITE THIS ONE.
-
-     The fit card calls a model, so the same input can produce different words
-     each time. That's not a bug — it's the nature of the tool. So what would
-     make it acceptable?
-
-     Think about what you'd actually be unhappy to see. A caption that never
-     mentions the price? Two different items producing the same opening
-     sentence? A card longer than a caption anyone would post? Any of those can
-     be turned into a number. -->
+`create_fit_card` returns a 2-4 sentence caption that mentions the price of the item and platform - 4 out of 5 tries 
 
 
 
 **Why this target:**
 
-
-
+wording varies between runs and the acceptance criteria is whether the output is caption-shaped and includes the required details not whether it is word for word identical 
 ---
 
-## 5. Your choice
+## 5. Search enforces the Price Cap 
 
-<!-- YOU WRITE THIS ONE TOO.
-
-     Pick something you actually care about getting right. Speed, the empty
-     wardrobe path, what happens when the model can't be reached, whether the
-     search respects a price ceiling — anything, as long as it names a number
-     or an observable outcome. -->
-
-
+Given a search with a price ceiling like "under $30", every listing returned by `search_listings` has a price at or below the requested maximum in 5 of 5 tries.
 
 **Why this target:**
+Either the prices are below the cap or they aren't. If the search ignores the budget, the result is broken, not close. So 5 of 5 is the right setting
 
 
 
