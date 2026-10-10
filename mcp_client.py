@@ -176,3 +176,4 @@ if __name__ == "__main__":
             mark = "" if key in required else "  (optional)"
             print(f"    - {key}: {kind}{mark}")
         print()
+
