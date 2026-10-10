@@ -67,23 +67,27 @@ from tools import search_listings as _search_listings_impl  # noqa: F401 — you
 mcp = FastMCP("fitfindr", log_level="WARNING")
 
 
-# ── TODO: uncomment and fill this in ──────────────────────────────────────────
-#
-# @mcp.tool()
-# def search_listings(
-#     description: str,
-#     size: str | None = None,
-#     max_price: float | None = None,
-# ) -> list[dict]:
-#     """
-#     <-- YOUR DESCRIPTION GOES HERE.
-#
-#         One or two sentences. What does this tool do, what does it need, and
-#         what does it give back when it finds nothing? Written for a reader
-#         who cannot see the code.
-#     """
-#     return _search_listings_impl(description, size, max_price)
-#
+# ── search_listings ───────────────────────────────────────────────────────────
+
+@mcp.tool()
+def search_listings(
+    description: str,
+    size: str | None = None,
+    max_price: float | None = None,
+) -> list[dict]:
+    """
+    Search secondhand clothing listings by keywords, with optional size and price filters.
+
+    Inputs: `description` (str, required) is free-text keywords like "vintage graphic tee".
+    `size` (str, optional) is a size label like "M" or "W30", matched case-insensitively.
+    `max_price` (float, optional) is the highest price allowed, in US dollars, inclusive.
+    Returns up to 10 listing dicts, best keyword match first. Each has id, title,
+    description, category, style_tags (list), size, condition, price (float, USD),
+    colors (list), brand (str or null), and platform. Returns an empty list [] when
+    nothing matches. It never returns null and never raises an error for no results.
+    """
+    return _search_listings_impl(description, size, max_price)
+
 # ──────────────────────────────────────────────────────────────────────────────
 #
 # Two notes on the block above.
@@ -102,3 +106,4 @@ mcp = FastMCP("fitfindr", log_level="WARNING")
 
 if __name__ == "__main__":
     mcp.run()
+
