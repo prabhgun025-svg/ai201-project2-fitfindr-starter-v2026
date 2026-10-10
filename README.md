@@ -61,9 +61,9 @@ This is a fitfindr application in which the user asks questions such as pricing,
 
 ### `search_listings`
 
-- What it does: Searches the project's listings data for items matching a text query and optional filters, returning scored candidates.
-- Inputs: `query` (str), `max_price` (float, optional), `size` (str, optional), `platform` (str, optional)
-- Returns: A list of listing dicts, each with keys: `id` (str), `title` (str), `price` (float), `size` (str or null), `platform` (str), `url` (str), `condition` (str), and `score` (float relevance score).
+- What it does: Searches the project's listings data for items whose title, description, or style tags match the keywords. It can also filter by size and a price ceiling. Results are ranked by keyword overlap, and title matches count most.
+- Inputs: `description` (str, required), `size` (str, optional, matched case-insensitively), `max_price` (float, optional, US dollars, inclusive)
+- Returns: Up to 10 listing dicts, best match first. Each has keys: `id` (str), `title` (str), `description` (str), `category` (str), `style_tags` (list of str), `size` (str), `condition` (str), `price` (float), `colors` (list of str), `brand` (str or null), and `platform` (str).
 - When it has nothing: Returns an empty list (`[]`).
 
 ### `suggest_outfit`
@@ -396,6 +396,5 @@ full. -->
 ---
 
 📖 **How to run this project: [RUNNING.md](RUNNING.md)**
-
 
 
