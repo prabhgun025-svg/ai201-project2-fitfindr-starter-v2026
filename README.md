@@ -511,7 +511,7 @@ Wrote results/run_2026-10-11_1347_before.md
 |---|---|---|---|
 | 1. A Matching Query completes all three tools  | 4/5 | 5/5 | In all five tries, the three tools worked as intended and each try ends with a fit card  |  
 | 2. An Impossible Query stops before the second tool | 5/5 | 5/5 | All impossible queries in all 5 tries stopped early and the message said what to change in the search |  
-| 3. The selected item must survive the whole loop | 5/5 |  |  0/5| While it survived the loop, no id appears in the log and that is what the criterion asks for, the id |
+| 3. The selected item must survive the whole loop | 5/5 | 0/5| While it survived the loop, no id appears in the log and that is what the criterion asks for, the id |
 | 4. fit card fllback and content requirement are both enforced| 5/5 | 5/5 | every item has 3-4 sentences and mentions both price and platform|
 | 5. search enforces the Price Cap| 5/5 | 5/5 | every try returned under the price capped at $30 so they all passed |  
 
