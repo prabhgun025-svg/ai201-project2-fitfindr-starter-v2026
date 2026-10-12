@@ -130,6 +130,11 @@ def search_listings(
 
 # ── Tool 2: suggest_outfit ────────────────────────────────────────────────────
 
+def _item_ref(new_item: dict) -> str:
+    """The listing's id and price, stamped by code so they can't be dropped by the model."""
+    return f"[{new_item.get('id', 'unknown id')} · ${new_item.get('price', 'unknown')}]"
+
+
 def suggest_outfit(new_item: dict, wardrobe: dict) -> str:
     """
     Given a thrifted item and the user's wardrobe, suggest one or two outfits.
@@ -163,12 +168,13 @@ def suggest_outfit(new_item: dict, wardrobe: dict) -> str:
     item_category = new_item.get("category", "piece")
     item_style = ", ".join(new_item.get("style_tags", []))
     item_condition = new_item.get("condition", "good")
+    item_price = new_item.get("price", "unknown")
     
     wardrobe_items = wardrobe.get("items", [])
     
     if not wardrobe_items:
         # Empty wardrobe: ask for general styling advice
-        prompt = f"""I found a {item_condition} {item_brand} {item_title} ({item_category}, style: {item_style}). 
+        prompt = f"""I found a {item_condition} {item_brand} {item_title} ({item_category}, style: {item_style}) for ${item_price}. 
         
 I don't have any items in my wardrobe yet. Give me 1-2 general styling ideas for how to wear this piece. Focus on the vibe and what essentials would work well with it."""
     else:
@@ -178,7 +184,7 @@ I don't have any items in my wardrobe yet. Give me 1-2 general styling ideas for
             for w in wardrobe_items[:10]  # limit to first 10 for brevity
         ])
         
-        prompt = f"""I found a {item_condition} {item_brand} {item_title} ({item_category}, style: {item_style}).
+        prompt = f"""I found a {item_condition} {item_brand} {item_title} ({item_category}, style: {item_style}) for ${item_price}.
 
 My current wardrobe includes:
 {wardrobe_desc}
@@ -186,7 +192,7 @@ My current wardrobe includes:
 Give me 1-2 specific outfit suggestions that combine this new piece with items I already own. Name the pieces you'd pair it with."""
     
     response = generate(prompt)
-    return response if response else ""
+    return f"{_item_ref(new_item)}\n{response}" if response else ""
 
 
 # ── Tool 3: create_fit_card ───────────────────────────────────────────────────
@@ -246,7 +252,7 @@ Outfit suggestion: {outfit}
 The caption should be casual, mention the price and platform naturally (not as a list), describe the vibe, and sound like a real post someone would make. Be specific about why this find is cool."""
     
     response = generate(prompt)
-    return response if response else ""
+    return f"{_item_ref(new_item)}\n{response}" if response else ""
 
 
 # ── Tool 4: price_comparison ────────────────────────────────────────────────
@@ -360,4 +366,5 @@ def price_comparison(target: dict, candidates: list[dict] | None = None) -> dict
         "num_competitors": n,
         "competitors": comparables,
     }
+
 
