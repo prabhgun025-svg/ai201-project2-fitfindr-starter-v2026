@@ -19,7 +19,7 @@ data earns credit; *"80% seemed reasonable"* does not.
 
 ---
 
-## 1. A matching query completes all three tools
+## 1. A matching query completes all three tools (MET)
 
 Given a query that matches at least one listing, the agent completes all three
 tool calls and returns a fit card — in at least 4 of 5 tries.
@@ -29,7 +29,7 @@ The search is based on plain keyboard and this means the matching sets are are i
 
 ---
 
-## 2. An impossible query stops before the second tool
+## 2. An impossible query stops before the second tool (MET)
 
 Given a query that matches no listings, the agent stops before calling
 `suggest_outfit` and returns a message naming what to change — in 5 of 5 tries.
@@ -39,18 +39,19 @@ the criteria is direct and has a yes or no system. If the query stops before the
 
 ---
 
-## 3. The selected item must survive the whole loop
+## 3. The selected item must survive the whole loop (MISSED)
 
 After `search_listings` returns a result and the loop stores it in `session["selected_item"]`, that same item's `id` and price appear in the session and in the output of both `suggest_outfit` and `create_fit_card` — in 5 of 5 tries.
 
 **Why this target:**
 The loop can call all three tools and still be wrong if it switches items between steps. Either the item IDs match or they don't so 5 of 5 is the right target. If state is broken, no other criterion can pass
 
-
+**Why it missed**
+It missed in a tool, specifically the prompts that suggest_outfit and create_fit_card build. The criterion missed all five tries and every try failed the same way. All tries held the item throughout the loop but not the ID or the price. Those two got missed within the loop. 
 
 ---
 
-## 4. Fit-card fallback and content requirement are both enforced
+## 4. Fit-card fallback and content requirement are both enforced (MET)
 
 `create_fit_card` returns a 2-4 sentence caption that mentions the price of the item and platform - 4 out of 5 tries 
 
@@ -61,7 +62,7 @@ The loop can call all three tools and still be wrong if it switches items betwee
 wording varies between runs and the acceptance criteria is whether the output is caption-shaped and includes the required details not whether it is word for word identical 
 ---
 
-## 5. Search enforces the Price Cap 
+## 5. Search enforces the Price Cap (MET)
 
 Given a search with a price ceiling like "under $30", every listing returned by `search_listings` has a price at or below the requested maximum in 5 of 5 tries.
 
