@@ -507,8 +507,8 @@ Wrote results/run_2026-10-11_1347_before.md
      Look for a pattern. Three misses on the same tool is one problem, not
      three. -->
 
-| # | Criterion | Target | Verdict | How I decided |
-|---|---|---|---|---|
+| Criterion | Target | Verdict | How I decided |
+|---|---|---|---|
 | 1. A Matching Query completes all three tools  | 4/5 | 5/5 | In all five tries, the three tools worked as intended and each try ends with a fit card  |  
 | 2. An Impossible Query stops before the second tool | 5/5 | 5/5 | All impossible queries in all 5 tries stopped early and the message said what to change in the search |  
 | 3. The selected item must survive the whole loop | 5/5 |  |  0/5| While it survived the loop, no id appears in the log and that is what the criterion asks for, the id |
