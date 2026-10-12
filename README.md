@@ -239,19 +239,252 @@ python3 -c "from tools import price_comparison; from utils.data_loader import lo
      `python run_eval.py --label before` runs everything and writes the table
      into results/. Paste it here and fill in the verdicts. -->
 
+
+
 | Criterion | Target | Try 1 | Try 2 | Try 3 | Try 4 | Try 5 | Verdict |
 |---|---|---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |  |  |
+| 1. A Matching Query completes all three tools  | 4/5 | PASS | PASS |PASS| PASS | PASS | MET (5/5)|
+| 2. An Impossible Query stops before the second tool | 5/5 | PASS |PASS  | PASS | PASS | PASS | MET (5/5) |
+| 3. The selected item must survive the whole loop | 5/5 | FAIL | FAIL | FAIL |FAIL| FAIL | MISSED 0/5 |
+| 4. fit card fllback and content requirement are both enforced |  4/5| PASS | PASS |PASS  | PASS | PASS | MET (5/5) |
+| 5. search enforces the Price Cap | 5/5 |  PASS| PASS | PASS | PASS | PASS | MET (5/5) |
 
 **Real output from one try**, pasted as text, naming the file and function
 that produced it:
 
 ```
 
+matching query completes  (example wardrobe)
+  query: vintage graphic tee under $30
+[1] parse_query
+      in:  vintage graphic tee under $30
+      out: {'description': 'vintage graphic tee', 'size': '30', 'max_price': 30.0}
+[2] search_listings (via MCP)
+      in:  {'description': 'vintage graphic tee', 'size': '30', 'max_price': 30.0}
+      out: 1 items: Straight Leg Khaki Trousers — Olive
+      →    branch: results, continuing
+[3] select_item
+      in:  1 results
+      out: Straight Leg Khaki Trousers — Olive ($29.0, poshmark)
+      →    first result
+[4] suggest_outfit
+      in:  new_item='Straight Leg Khaki Trousers — Olive', wardrobe=10 items
+      out: Here are two specific outfit suggestions that incorporate your new olive straight-leg trousers, blending that …
+[5] create_fit_card
+      in:  new_item='Straight Leg Khaki Trousers — Olive', outfit=<suggest_outfit text>
+      out: Scored these gorgeous olive straight-leg trousers in pristine condition on Poshmark for just $29, and I am off…
+  try 1: completed — fit card 366 chars
+[1] parse_query
+      in:  vintage graphic tee under $30
+      out: {'description': 'vintage graphic tee', 'size': '30', 'max_price': 30.0}
+[2] search_listings (via MCP)
+      in:  {'description': 'vintage graphic tee', 'size': '30', 'max_price': 30.0}
+      out: 1 items: Straight Leg Khaki Trousers — Olive
+      →    branch: results, continuing
+[3] select_item
+      in:  1 results
+      out: Straight Leg Khaki Trousers — Olive ($29.0, poshmark)
+      →    first result
+[4] suggest_outfit
+      in:  new_item='Straight Leg Khaki Trousers — Olive', wardrobe=10 items
+      out: Here are two specific outfit suggestions that incorporate your new olive straight-leg khaki trousers while pla…
+[5] create_fit_card
+      in:  new_item='Straight Leg Khaki Trousers — Olive', outfit=<suggest_outfit text>
+      out: Found my new favorite pair of trousers on Poshmark for just $29 and the condition is honestly unreal! These ol…
+  try 2: completed — fit card 322 chars
+[1] parse_query
+      in:  vintage graphic tee under $30
+      out: {'description': 'vintage graphic tee', 'size': '30', 'max_price': 30.0}
+[2] search_listings (via MCP)
+      in:  {'description': 'vintage graphic tee', 'size': '30', 'max_price': 30.0}
+      out: 1 items: Straight Leg Khaki Trousers — Olive
+      →    branch: results, continuing
+[3] select_item
+      in:  1 results
+      out: Straight Leg Khaki Trousers — Olive ($29.0, poshmark)
+      →    first result
+[4] suggest_outfit
+      in:  new_item='Straight Leg Khaki Trousers — Olive', wardrobe=10 items
+      out: Here are two specific outfit suggestions that blend your new olive straight-leg trousers with your current war…
+[5] create_fit_card
+      in:  new_item='Straight Leg Khaki Trousers — Olive', outfit=<suggest_outfit text>
+      out: Scored these straight-leg olive trousers in excellent condition on Poshmark for just $29, and they are officia…
+  try 3: completed — fit card 358 chars
+[1] parse_query
+      in:  vintage graphic tee under $30
+      out: {'description': 'vintage graphic tee', 'size': '30', 'max_price': 30.0}
+[2] search_listings (via MCP)
+      in:  {'description': 'vintage graphic tee', 'size': '30', 'max_price': 30.0}
+      out: 1 items: Straight Leg Khaki Trousers — Olive
+      →    branch: results, continuing
+[3] select_item
+      in:  1 results
+      out: Straight Leg Khaki Trousers — Olive ($29.0, poshmark)
+      →    first result
+[4] suggest_outfit
+      in:  new_item='Straight Leg Khaki Trousers — Olive', wardrobe=10 items
+      out: Here are 2 specific outfit suggestions that seamlessly integrate your new olive straight-leg trousers into you…
+[5] create_fit_card
+      in:  new_item='Straight Leg Khaki Trousers — Olive', outfit=<suggest_outfit text>
+      out: Scored these olive straight-leg trousers in pristine condition for just $29 on Poshmark, and they are official…
+  try 4: completed — fit card 371 chars
+[1] parse_query
+      in:  vintage graphic tee under $30
+      out: {'description': 'vintage graphic tee', 'size': '30', 'max_price': 30.0}
+[2] search_listings (via MCP)
+      in:  {'description': 'vintage graphic tee', 'size': '30', 'max_price': 30.0}
+      out: 1 items: Straight Leg Khaki Trousers — Olive
+      →    branch: results, continuing
+[3] select_item
+      in:  1 results
+      out: Straight Leg Khaki Trousers — Olive ($29.0, poshmark)
+      →    first result
+[4] suggest_outfit
+      in:  new_item='Straight Leg Khaki Trousers — Olive', wardrobe=10 items
+      out: Here are two specific outfit suggestions that incorporate your new olive straight-leg trousers with pieces fro…
+[5] create_fit_card
+      in:  new_item='Straight Leg Khaki Trousers — Olive', outfit=<suggest_outfit text>
+      out: Scored these gorgeous olive straight-leg trousers in pristine condition for just $29 on Poshmark, and I am off…
+  try 5: completed — fit card 336 chars
+
+impossible query stops early  (example wardrobe)
+  query: designer ballgown size XXS under $5
+[1] parse_query
+      in:  designer ballgown size XXS under $5
+      out: {'description': 'deigner bagown', 'size': 'S', 'max_price': 5.0}
+[2] search_listings (via MCP)
+      in:  {'description': 'deigner bagown', 'size': 'S', 'max_price': 5.0}
+      out: [] (empty)
+      →    branch: empty, stopping
+  try 1: stopped early — No items found matching 'deigner bagown' under $5.0 in size 
+[1] parse_query
+      in:  designer ballgown size XXS under $5
+      out: {'description': 'deigner bagown', 'size': 'S', 'max_price': 5.0}
+[2] search_listings (via MCP)
+      in:  {'description': 'deigner bagown', 'size': 'S', 'max_price': 5.0}
+      out: [] (empty)
+      →    branch: empty, stopping
+  try 2: stopped early — No items found matching 'deigner bagown' under $5.0 in size 
+[1] parse_query
+      in:  designer ballgown size XXS under $5
+      out: {'description': 'deigner bagown', 'size': 'S', 'max_price': 5.0}
+[2] search_listings (via MCP)
+      in:  {'description': 'deigner bagown', 'size': 'S', 'max_price': 5.0}
+      out: [] (empty)
+      →    branch: empty, stopping
+  try 3: stopped early — No items found matching 'deigner bagown' under $5.0 in size 
+[1] parse_query
+      in:  designer ballgown size XXS under $5
+      out: {'description': 'deigner bagown', 'size': 'S', 'max_price': 5.0}
+[2] search_listings (via MCP)
+      in:  {'description': 'deigner bagown', 'size': 'S', 'max_price': 5.0}
+      out: [] (empty)
+      →    branch: empty, stopping
+  try 4: stopped early — No items found matching 'deigner bagown' under $5.0 in size 
+[1] parse_query
+      in:  designer ballgown size XXS under $5
+      out: {'description': 'deigner bagown', 'size': 'S', 'max_price': 5.0}
+[2] search_listings (via MCP)
+      in:  {'description': 'deigner bagown', 'size': 'S', 'max_price': 5.0}
+      out: [] (empty)
+      →    branch: empty, stopping
+  try 5: stopped early — No items found matching 'deigner bagown' under $5.0 in size 
+
+empty wardrobe  (empty wardrobe)
+  query: denim jacket under $50
+[1] parse_query
+      in:  denim jacket under $50
+      out: {'description': 'deni jacket', 'size': 'M', 'max_price': 50.0}
+[2] search_listings (via MCP)
+      in:  {'description': 'deni jacket', 'size': 'M', 'max_price': 50.0}
+      out: 3 items: 90s Track Jacket — Navy/White Stripe, Shacket — Olive Canvas, Denim Vest — Medium Wash, Studded
+      →    branch: results, continuing
+[3] select_item
+      in:  3 results
+      out: 90s Track Jacket — Navy/White Stripe ($45.0, poshmark)
+      →    first result
+[4] suggest_outfit
+      in:  new_item='90s Track Jacket — Navy/White Stripe', wardrobe=0 items
+      out: That’s an incredible find. A 90s Champion track jacket in navy with white stripes is the ultimate heritage str…
+[5] create_fit_card
+      in:  new_item='90s Track Jacket — Navy/White Stripe', outfit=<suggest_outfit text>
+      out: Scored this absolute vintage treasure on Poshmark for just $45! This 90s navy and white striped track jacket h…
+  try 1: completed — fit card 291 chars
+[1] parse_query
+      in:  denim jacket under $50
+      out: {'description': 'deni jacket', 'size': 'M', 'max_price': 50.0}
+[2] search_listings (via MCP)
+      in:  {'description': 'deni jacket', 'size': 'M', 'max_price': 50.0}
+      out: 3 items: 90s Track Jacket — Navy/White Stripe, Shacket — Olive Canvas, Denim Vest — Medium Wash, Studded
+      →    branch: results, continuing
+[3] select_item
+      in:  3 results
+      out: 90s Track Jacket — Navy/White Stripe ($45.0, poshmark)
+      →    first result
+[4] suggest_outfit
+      in:  new_item='90s Track Jacket — Navy/White Stripe', wardrobe=0 items
+      out: That is an absolute classic find. A 90s Champion navy and white track jacket is the holy grail of vintage athl…
+[5] create_fit_card
+      in:  new_item='90s Track Jacket — Navy/White Stripe', outfit=<suggest_outfit text>
+      out: Absolute holy grail find secured! ⚡️ Scoring this vintage 90s navy and white track jacket in pristine conditio…
+  try 2: completed — fit card 385 chars
+[1] parse_query
+      in:  denim jacket under $50
+      out: {'description': 'deni jacket', 'size': 'M', 'max_price': 50.0}
+[2] search_listings (via MCP)
+      in:  {'description': 'deni jacket', 'size': 'M', 'max_price': 50.0}
+      out: 3 items: 90s Track Jacket — Navy/White Stripe, Shacket — Olive Canvas, Denim Vest — Medium Wash, Studded
+      →    branch: results, continuing
+[3] select_item
+      in:  3 results
+      out: 90s Track Jacket — Navy/White Stripe ($45.0, poshmark)
+      →    first result
+[4] suggest_outfit
+      in:  new_item='90s Track Jacket — Navy/White Stripe', wardrobe=0 items
+      out: That is an absolute classic find! A 90s Champion navy and white stripe track jacket is one of the most versati…
+  [rate limit] 15 requests used this minute. Waiting 32s. This is normal.
+[5] create_fit_card
+      in:  new_item='90s Track Jacket — Navy/White Stripe', outfit=<suggest_outfit text>
+      out: Scored the ultimate 90s vintage track jacket in pristine condition for just $45! ⚡️ Obsessed with the navy and…
+  try 3: completed — fit card 361 chars
+[1] parse_query
+      in:  denim jacket under $50
+      out: {'description': 'deni jacket', 'size': 'M', 'max_price': 50.0}
+[2] search_listings (via MCP)
+      in:  {'description': 'deni jacket', 'size': 'M', 'max_price': 50.0}
+      out: 3 items: 90s Track Jacket — Navy/White Stripe, Shacket — Olive Canvas, Denim Vest — Medium Wash, Studded
+      →    branch: results, continuing
+[3] select_item
+      in:  3 results
+      out: 90s Track Jacket — Navy/White Stripe ($45.0, poshmark)
+      →    first result
+[4] suggest_outfit
+      in:  new_item='90s Track Jacket — Navy/White Stripe', wardrobe=0 items
+      out: That is a classic find! A 90s Champion track jacket is the ultimate versatile piece because it bridges the gap…
+[5] create_fit_card
+      in:  new_item='90s Track Jacket — Navy/White Stripe', outfit=<suggest_outfit text>
+      out: Scored this vintage 90s navy and white track jacket in mint condition for just $45 on Poshmark! It’s the ultim…
+  try 4: completed — fit card 281 chars
+[1] parse_query
+      in:  denim jacket under $50
+      out: {'description': 'deni jacket', 'size': 'M', 'max_price': 50.0}
+[2] search_listings (via MCP)
+      in:  {'description': 'deni jacket', 'size': 'M', 'max_price': 50.0}
+      out: 3 items: 90s Track Jacket — Navy/White Stripe, Shacket — Olive Canvas, Denim Vest — Medium Wash, Studded
+      →    branch: results, continuing
+[3] select_item
+      in:  3 results
+      out: 90s Track Jacket — Navy/White Stripe ($45.0, poshmark)
+      →    first result
+[4] suggest_outfit
+      in:  new_item='90s Track Jacket — Navy/White Stripe', wardrobe=0 items
+      out: That is a classic find! A 90s Champion track jacket in navy with white stripes is the ultimate heritage street…
+[5] create_fit_card
+      in:  new_item='90s Track Jacket — Navy/White Stripe', outfit=<suggest_outfit text>
+      out: Scored this pristine 90s navy and white track jacket for just $45, and honestly, it’s the ultimate heritage st…
+  try 5: completed — fit card 385 chars
+
+Wrote results/run_2026-10-11_1347_before.md
 ```
 
 ---
@@ -276,11 +509,11 @@ that produced it:
 
 | # | Criterion | Target | Verdict | How I decided |
 |---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
-| 5 |  |  |  |  |
+| 1. |  |  |  |  |
+| 2. |  |  |  |  |
+| 3.  |  |  |  |  |
+| 4. |  |  |  |  |
+| 5. |  |  |  |  |
 
 **Diagnoses**
 
@@ -300,17 +533,43 @@ that produced it:
      the same length, your branch isn't working — and this is the fastest way
      anyone will ever find that out. -->
 
-**Happy path**
+**Happy path** (`python app.py ask 'vintage graphic tee under $30' --trace`)
 
 ```
-
+[1] parse_query
+      in:  vintage graphic tee under $30
+      out: {'description': 'vintage graphic tee', 'size': '30', 'max_price': 30.0}
+[2] search_listings (via MCP)
+      in:  {'description': 'vintage graphic tee', 'size': '30', 'max_price': 30.0}
+      out: 1 items: Straight Leg Khaki Trousers — Olive
+      →    branch: results, continuing
+[3] select_item
+      in:  1 results
+      out: Straight Leg Khaki Trousers — Olive ($29.0, poshmark)
+      →    first result
+[4] suggest_outfit
+      in:  new_item='Straight Leg Khaki Trousers — Olive', wardrobe=10 items
+      out: Here are two specific outfit suggestions that incorporate your new olive straight-leg khaki trousers while pla…
+[5] create_fit_card
+      in:  new_item='Straight Leg Khaki Trousers — Olive', outfit=<suggest_outfit text>
+      out: Scored these olive straight-leg trousers in excellent condition on Poshmark for just $29, and I am officially …
 ```
 
-**Empty search**
+The loop works, but step [1] shows the query parser reading the price "30" as `size='30'`, so the search's only match is a pair of W30 trousers, not a tee.
+
+**Empty search** (`python app.py ask 'designer ballgown size XXS under $5' --trace`)
 
 ```
-
+[1] parse_query
+      in:  designer ballgown size XXS under $5
+      out: {'description': 'deigner bagown', 'size': 'S', 'max_price': 5.0}
+[2] search_listings (via MCP)
+      in:  {'description': 'deigner bagown', 'size': 'S', 'max_price': 5.0}
+      out: [] (empty)
+      →    branch: empty, stopping
 ```
+
+Two steps instead of five: the branch stops before `suggest_outfit`.
 
 **On the MCP move:** <!-- what changed in your code, and whether anything
 behaved differently afterwards. If the rewire didn't work, say exactly where it
@@ -318,6 +577,67 @@ broke — the error text and the last thing that worked. That earns the point in
 full. -->
 
 
+
+---
+
+## Failure Modes
+
+Each one triggered on its own, with `search_listings` running over MCP.
+
+**1. Empty search.** `python app.py ask 'designer ballgown size XXS under $5'`
+
+```
+  No items found matching 'deigner bagown' under $5.0 in size S. Try different keywords, a higher price, or removing size filters.
+
+0 model calls this session
+```
+
+Handled: the loop stopped before `suggest_outfit` and named three things to change. The message also exposes a parser bug in `agent.py::run_agent`: the size regex has no word boundaries, so it took the "s" in "designer" as size S (not XXS) and stripped letters out of the description.
+
+**2. Empty wardrobe.** `python app.py ask 'denim jacket under $50' --empty-wardrobe`
+
+```
+(running with an empty wardrobe)
+
+  Found:    90s Track Jacket — Navy/White Stripe — $45.0 on poshmark
+
+  Outfit:   That is an absolute classic find. ... Since you are starting your
+            wardrobe from scratch, this jacket is a fantastic anchor piece.
+            Here are two distinct ways to style it ...
+            [two looks built from essentials to buy, plus a starter checklist]
+
+  Fit card: Scored the ultimate 90s heritage piece today ...
+
+2 model calls this session, 786 prompt + 691 output tokens
+```
+
+Handled: `suggest_outfit` returned real advice, not a crash and not an empty string, and the fit card still rendered. Same parser bug: "denim" contains an "m", so it searched with size M and a mangled description, which is why it found a track jacket instead of a denim one.
+
+**3. Model unavailable.** Changed the last character of `GEMINI_API_KEY`, then ran a query I hadn't asked before: `python app.py ask 'corduroy overshirt in olive under $35'`
+
+```
+ModelUnavailable: The model rejected your API key. Check GEMINI_API_KEY in your .env file, or create a fresh key at aistudio.google.com.
+
+1 model calls this session
+```
+
+Not handled by the agent. That clean message came from the catch-all in `app.py::main`, not from my loop: `run_agent` raised, the session (and the listing it had already found) was lost, and the run exited with code 1. Calling `run_agent` directly would have shown a stack trace.
+
+Fix: `agent.py::run_agent` now catches `ModelUnavailable` around `suggest_outfit` and `create_fit_card`, keeps the search result, and puts a message in `session["error"]`. Re-run with a broken key and a new query (`python app.py ask 'faded black denim jacket under $60' --trace`):
+
+```
+[3] select_item
+      in:  6 results
+      out: Vintage Graphic Hoodie — Faded Black ($26.0, depop)
+      →    first result
+[4] model call failed
+      out: The model rejected your API key. Check GEMINI_API_KEY in your .env file, or create a fresh key at aistudio.goo…
+      →    ModelUnavailable, stopping
+
+  Found Vintage Graphic Hoodie — Faded Black ($26.0 on depop), but couldn't reach the model to style it: The model rejected your API key. Check GEMINI_API_KEY in your .env file, or create a fresh key at aistudio.google.com. Fix that and ask again.
+```
+
+Now it names what broke and what to do, exits 0, and doesn't hang (about 1 second). I put the key back afterwards.
 
 ---
 
